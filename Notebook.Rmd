@@ -1,0 +1,52 @@
+---
+title: "ADS 503: Final Team Project"
+author: "Caleb McCurdy, Mirna Philip, and Christine Vu"
+date: "June 5, 2023"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+***
+
+## Data Importing and Pre-processing
+```{r message = FALSE, warning = FALSE, results = 'hide'}
+library(readr)
+library(RTextTools)
+library(readxl)
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+library(corrplot)
+library(mlbench)
+library(moments)
+library(e1071)
+library(caret)
+
+df <- read.csv('https://raw.githubusercontent.com/mirna1983/dermatology-project/main/data/dermatology.data')
+
+head(df, 5)
+```
+
+&nbsp;
+
+#### Add Column Names
+
+The data frame is missing the column names that correspond to the provided attribute list. Therefore, the column names are appended based on the attribute information list.
+
+```{r, warnings = FALSE}
+# Given column names
+given_columns <- c("X2", "X2.1", "X0", "X3", "X0.1", "X0.2", "X0.3", "X0.4", "X1", "X0.5", "X0.6", "X0.7", "X0.8", "X0.9", "X0.10", "X3.1", "X2.2", "X0.11", "X0.12", "X0.13", "X0.14", "X0.15", "X0.16", "X0.17", "X0.18", "X0.19", "X0.20", "X3.2", "X0.21", "X0.22", "X0.23", "X1.1", "X0.24", "X55", "X2.3")
+
+# Desired column names
+desired_columns <- c("erythema", "scaling", "definite_borders", "itching", "koebner_phenomenon", "polygonal_papules", "follicular_papules", "oral_mucosal_involvement", "knee_and_elbow_involvement", "scalp_involvement", "family_history", "melanin_incontinence", "eosinophils_in_the_infiltrate", "PNL_infiltrate", "fibrosis_of_the_papillary_dermis", "exocytosis", "acanthosis", "hyperkeratosis", "parakeratosis", "clubbing_of_the_rete_ridges", "elongation_of_the_rete_ridges", "thinning_of_the_suprapapillary_epidermis", "spongiform_pustule", "munro_microabcess", "focal_hypergranulosis", "disappearance_of_the_granular_layer", "vacuolisation_and_damage_of_basal_layer", "spongiosis", "saw-tooth_appearance_of_retes", "follicular_horn_plug", "perifollicular_parakeratosis", "inflammatory_monoluclear_inflitrate", "band-like_infiltrate", "Age", "class")
+
+# Assign desired column names
+colnames(df) <- desired_columns
+head(df, 3)
+```
