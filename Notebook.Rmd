@@ -27,6 +27,12 @@ library(mlbench)
 library(moments)
 library(e1071)
 library(caret)
+library(Hmisc)
+library(plotly)
+library(psych)
+library(MASS)
+library(AppliedPredictiveModeling)
+library(glmnet)
 ```
 
 ```{r}
@@ -34,7 +40,10 @@ df <- read.table('https://raw.githubusercontent.com/mirna1983/dermatology-projec
 
 head(df)
 ```
-
+```{r}
+#dimension of data (rows and columns)
+dim(df)
+```
 
 &nbsp;
 
@@ -50,3 +59,24 @@ desired_columns <- c("erythema", "scaling", "definite_borders", "itching", "koeb
 colnames(df) <- desired_columns
 head(df, 3)
 ```
+
+```{r}
+#summary of the data frame
+summary(df)
+```
+
+```{r}
+str(df)
+```
+
+```{r}
+# checking for missing values
+sapply(df, function(x) sum(is.na(x)))
+```
+
+```{r}
+# checking for potential duplicate instances
+sum(duplicated(as.matrix(df), fromLast = FALSE))
+```
+
+
