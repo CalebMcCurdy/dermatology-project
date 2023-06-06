@@ -26,6 +26,7 @@ library(corrplot)
 library(mlbench)
 library(moments)
 library(e1071)
+#mlbench because it provides a collection of various datasets
 library(caret)
 library(Hmisc)
 library(plotly)
@@ -38,8 +39,9 @@ library(glmnet)
 ```{r}
 df <- read.table('https://raw.githubusercontent.com/mirna1983/dermatology-project/main/data/dermatology.data', sep = ",")
 
-head(df)
+head(df, 40)
 ```
+
 ```{r}
 #dimension of data (rows and columns)
 dim(df)
@@ -70,13 +72,96 @@ str(df)
 ```
 
 ```{r}
+# changing 'Age' into type numeric
+df$Age <- as.numeric(df$Age)
+```
+
+
+```{r}
 # checking for missing values
 sapply(df, function(x) sum(is.na(x)))
 ```
+
+There are no missing values in this data set other than for the 'Age' predictor which has 8. 
 
 ```{r}
 # checking for potential duplicate instances
 sum(duplicated(as.matrix(df), fromLast = FALSE))
 ```
 
+There are no duplicate instances to deal with.
+
+```{r}
+# make the graphs smaller by having 3 rows of graphs and 4 columns 
+par(mfrow = c(3,4))
+
+hist.data.frame(df)
+```
+
+```{r}
+# Plotting the correlation matrix using the corrplot function, only using 
+# complete pairs of observations between variables
+corrplot(cor(df, use = 'pairwise.complete.obs'), cl.cex= .5,tl.cex=.4)
+```
+
+```{r}
+# plotting boxplots of the 34 predictors and response variable
+boxplot(df[1:7])
+boxplot(df[8:14])
+boxplot(df[15:21])
+boxplot(df[22:28])
+boxplot(df[29:35])
+```
+
+```{r}
+#removing outliers from column 'erythema'
+Q1 <- quantile(df$erythema, 0.25)
+Q3 <- quantile(df$erythema, 0.75)
+IQR <- Q3 - Q1
+threshold <- 1.5
+lower_threshold <- Q1 - threshold * IQR
+upper_threshold <- Q3 + threshold * IQR
+df <- df[df$erythema >= lower_threshold & df$erythema <= upper_threshold, ]
+
+#removing outliers from column koebner_phenomenon
+Q1 <- quantile(df$koebner_phenomenon, 0.25)
+Q3 <- quantile(df$koebner_phenomenon, 0.75)
+IQR <- Q3 - Q1
+threshold <- 1.5
+lower_threshold <- Q1 - threshold * IQR
+upper_threshold <- Q3 + threshold * IQR
+df <- df[df$koebner_phenomenon >= lower_threshold & df$koebner_phenomenon <= upper_threshold, ]
+#removing outliers from column PNL_infiltrate
+Q1 <- quantile(df$PNL_infiltrate, 0.25)
+Q3 <- quantile(df$PNL_infiltrate, 0.75)
+IQR <- Q3 - Q1
+threshold <- 1.5
+lower_threshold <- Q1 - threshold * IQR
+upper_threshold <- Q3 + threshold * IQR
+df <- df[df$PNL_infiltrate >= lower_threshold & df$PNL_infiltrate <= upper_threshold, ]
+
+#removing outliers from column acanthosis
+Q1 <- quantile(df$acanthosis, 0.25)
+Q3 <- quantile(df$acanthosis, 0.75)
+IQR <- Q3 - Q1
+threshold <- 1.5
+lower_threshold <- Q1 - threshold * IQR
+upper_threshold <- Q3 + threshold * IQR
+df <- df[df$acanthosis >= lower_threshold & df$acanthosis <= upper_threshold, ]
+
+#removing outliers from column hyperkeratosis
+Q1 <- quantile(df$hyperkeratosis, 0.25)
+Q3 <- quantile(df$hyperkeratosis, 0.75)
+IQR <- Q3 - Q1
+threshold <- 1.5
+lower_threshold <- Q1 - threshold * IQR
+upper_threshold <- Q3 + threshold * IQR
+df <- df[df$hyperkeratosis >= lower_threshold & df$hyperkeratosis <= upper_threshold, ]
+```
+
+```{r}
+# skewness of numeric predictors
+skewness_values <- apply(df, 2, skewness, na.rm = TRUE)
+skewness_values
+```
 
