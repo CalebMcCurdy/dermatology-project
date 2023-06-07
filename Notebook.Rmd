@@ -39,7 +39,7 @@ library(glmnet)
 ```{r}
 df <- read.table('https://raw.githubusercontent.com/mirna1983/dermatology-project/main/data/dermatology.data', sep = ",")
 
-head(df, 40)
+head(df, 6)
 ```
 
 ```{r}
@@ -82,7 +82,15 @@ df$Age <- as.numeric(df$Age)
 sapply(df, function(x) sum(is.na(x)))
 ```
 
-There are no missing values in this data set other than for the 'Age' predictor which has 8. 
+There are no missing values in this data set other than for the 'Age' predictor which has 8. Due to the small number of instances with missing values, we will delete these rows from our data set.
+
+```{r}
+rows_with_NA <- which(is.na(df$Age))
+rows_with_NA
+
+df <- df[-rows_with_NAs, ]
+df
+```
 
 ```{r}
 # checking for potential duplicate instances
@@ -101,7 +109,7 @@ hist.data.frame(df)
 ```{r}
 # Plotting the correlation matrix using the corrplot function, only using 
 # complete pairs of observations between variables
-corrplot(cor(df, use = 'pairwise.complete.obs'), cl.cex= .5,tl.cex=.4)
+corrplot(cor(df), cl.cex= .5,tl.cex=.4)
 ```
 
 ```{r}
@@ -114,54 +122,39 @@ boxplot(df[29:35])
 ```
 
 ```{r}
-#removing outliers from column 'erythema'
-Q1 <- quantile(df$erythema, 0.25)
-Q3 <- quantile(df$erythema, 0.75)
-IQR <- Q3 - Q1
-threshold <- 1.5
-lower_threshold <- Q1 - threshold * IQR
-upper_threshold <- Q3 + threshold * IQR
-df <- df[df$erythema >= lower_threshold & df$erythema <= upper_threshold, ]
-
-#removing outliers from column koebner_phenomenon
-Q1 <- quantile(df$koebner_phenomenon, 0.25)
-Q3 <- quantile(df$koebner_phenomenon, 0.75)
-IQR <- Q3 - Q1
-threshold <- 1.5
-lower_threshold <- Q1 - threshold * IQR
-upper_threshold <- Q3 + threshold * IQR
-df <- df[df$koebner_phenomenon >= lower_threshold & df$koebner_phenomenon <= upper_threshold, ]
-#removing outliers from column PNL_infiltrate
-Q1 <- quantile(df$PNL_infiltrate, 0.25)
-Q3 <- quantile(df$PNL_infiltrate, 0.75)
-IQR <- Q3 - Q1
-threshold <- 1.5
-lower_threshold <- Q1 - threshold * IQR
-upper_threshold <- Q3 + threshold * IQR
-df <- df[df$PNL_infiltrate >= lower_threshold & df$PNL_infiltrate <= upper_threshold, ]
-
-#removing outliers from column acanthosis
-Q1 <- quantile(df$acanthosis, 0.25)
-Q3 <- quantile(df$acanthosis, 0.75)
-IQR <- Q3 - Q1
-threshold <- 1.5
-lower_threshold <- Q1 - threshold * IQR
-upper_threshold <- Q3 + threshold * IQR
-df <- df[df$acanthosis >= lower_threshold & df$acanthosis <= upper_threshold, ]
-
-#removing outliers from column hyperkeratosis
-Q1 <- quantile(df$hyperkeratosis, 0.25)
-Q3 <- quantile(df$hyperkeratosis, 0.75)
-IQR <- Q3 - Q1
-threshold <- 1.5
-lower_threshold <- Q1 - threshold * IQR
-upper_threshold <- Q3 + threshold * IQR
-df <- df[df$hyperkeratosis >= lower_threshold & df$hyperkeratosis <= upper_threshold, ]
-```
-
-```{r}
 # skewness of numeric predictors
 skewness_values <- apply(df, 2, skewness, na.rm = TRUE)
 skewness_values
 ```
+
+```{r}
+pred <- df[,-35]
+class <- df$class
+
+# split the data into training (80%) and test (20%) sets
+set.seed(123)
+training <- createDataPartition(class, p = 0.8, list = FALSE)
+pred_train <- pred[training,]
+class_train <- class[training]
+pred_test <- pred[-training,]
+class_test <- class[-training]
+
+# pre-process the data
+preProcValues <- preProcess(pred_train, method = c("center", "scale"))
+
+pred_train_trans <- predict(preProcValues, pred_train)
+pred_test_trans <- predict(preProcValues, pred_test)
+
+indx <- createFolds(class_train, returnTrain = TRUE)
+ctrl <- trainControl(method = "cv", index = indx)
+```
+
+```{r}
+## USE pred_train_trans AS THE TRAIN X SET
+## USE pred_test_trans AS THE TEST X SET
+## USE class_train AS THE TRAIN Y SET
+## USE class_test AS THE TEST Y SET
+```
+
+
 
