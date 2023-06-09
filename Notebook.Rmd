@@ -88,7 +88,7 @@ There are no missing values in this data set other than for the 'Age' predictor 
 rows_with_NA <- which(is.na(df$Age))
 rows_with_NA
 
-df <- df[-rows_with_NAs, ]
+df <- df[-rows_with_NA, ]
 df
 ```
 
@@ -154,6 +154,29 @@ ctrl <- trainControl(method = "cv", index = indx)
 ## USE pred_test_trans AS THE TEST X SET
 ## USE class_train AS THE TRAIN Y SET
 ## USE class_test AS THE TEST Y SET
+```
+```{r}
+# Setting the control parameters for the training
+ctrl <- trainControl(method = "cv", number = 10)
+# Defining the grid of hyperparameters for the neural network
+nnetGrid <- expand.grid(decay = c(0, 0.01, .1), size = c(3, 7, 11, 13))
+# Setting seed for reproducibility
+set.seed(123)
+# Training the neural network
+nnetTune <- train(x = pred_train_trans, y = class_train,
+                  method = "nnet",
+                  tuneGrid = nnetGrid,
+                  trControl = ctrl,
+                  preProc = c("center", "scale"),
+                  linout = TRUE,
+                  trace = FALSE,
+                  MaxNWts = 13 * (ncol(pred_train_trans) + 1) + 13 + 1,
+                  maxit = 1000)
+nnetTune
+```
+```{r}
+#finding the row with the lowest RMSE
+nnetTune$results[nnetTune$results$RMSE == min(nnetTune$results$RMSE), 3:5]
 ```
 
 
