@@ -155,9 +155,15 @@ ctrl <- trainControl(method = "cv", index = indx)
 ## USE class_train AS THE TRAIN Y SET
 ## USE class_test AS THE TEST Y SET
 ```
+
 ```{r}
 # Setting the control parameters for the training
-ctrl <- trainControl(method = "cv", number = 10)
+#ctrl <- trainControl(method = "cv", number = 10)
+indx <- createFolds(class_train, returnTrain = TRUE)
+ctrl <- trainControl(method = "cv", index = indx, number = 10)
+```
+
+```{r}
 # Defining the grid of hyperparameters for the neural network
 nnetGrid <- expand.grid(decay = c(0, 0.01, .1), size = c(3, 7, 11, 13))
 # Setting seed for reproducibility
@@ -177,7 +183,58 @@ nnetTune
 ```{r}
 #finding the row with the lowest RMSE
 nnetTune$results[nnetTune$results$RMSE == min(nnetTune$results$RMSE), 3:5]
+
+testResults <- data.frame(obs = class_test,
+                          NNet = predict(nnetTune, pred_test_trans))
+```
+
+```{r}
+set.seed(123)
+marsTune <- train(x = pred_train_trans, y = class_train,
+                  method = "earth",
+                  tuneGrid = expand.grid(degree = 1, nprune = 2:38),
+                  trControl = ctrl)
+marsTune
+
+plot(marsTune)
+
+#finding the row with the lowest RMSE
+marsTune$results[marsTune$results$RMSE == min(marsTune$results$RMSE), 3:5]
+
+testResults$MARS <- predict(marsTune, pred_test_trans)
+```
+
+```{r}
+knnDescr <- pred_train_trans[, -nearZeroVar(pred_train_trans)]
+
+set.seed(123)
+knnTune <- train(x = knnDescr, y = class_train,
+                 method = "knn",
+                 tuneGrid = data.frame(k = 1:20),
+                 trControl = ctrl)
+                 
+knnTune
+
+plot(knnTune)
+
+#finding the row with the lowest RMSE
+knnTune$results[knnTune$results$RMSE == min(knnTune$results$RMSE), 2:4]
+
+testResults$Knn <- predict(knnTune, pred_test_trans[, names(knnDescr)])
 ```
 
 
+
+
+
+
+```{r}
+### Variable Importance
+nnetImp <- varImp(nnetTune, scale = FALSE)
+plot(nnetImp, top = 20)
+marsImp <- varImp(marsTune, scale = FALSE)
+plot(marsImp)
+knnImp <- varImp(knnTune, scale = FALSE)
+plot(knnImp, top = 20)
+```
 
