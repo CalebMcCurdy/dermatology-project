@@ -4,10 +4,10 @@ This is the final project for the University of San Diego’s ADS 503 Applied Pr
 #### -- Project Status: [In Progress]
 
 ## Project Introduction and Objective
-The objective of the project is to develop a system that utilizies a dataset comprising age, skin features, and the type of dermatological condition to predict various diseases within a specific group, namely psoriasis, seborrheic dermatitis, lichen planus, pityriasis rosea, cronic dermatitis, and pityriasis rubra pilaris. By using advanced techniques, predictive models will be developed to identify these conditions based on the provided information. The project involves multiple stages, including data preparation, feature analysis, training, fine-tuning, and evaluation of performance. By advancing understanding and prediction capabilities of skin disorders, this project aims to empower individuals with valuable insights, enabling them to make informed decisions regarding their healthcare.
+The objective of the project is to develop a system that utilizes a dataset comprising age, skin features, and the type of dermatological condition to predict various diseases within a specific group, namely psoriasis, seborrheic dermatitis, lichen planus, pityriasis rosea, chronic dermatitis, and pityriasis rubra pilaris. By using advanced techniques, predictive models will be developed to identify these conditions based on the provided information. The project involves multiple stages, including data preparation, feature analysis, training, fine-tuning, and evaluation of performance. By advancing the understanding and prediction capabilities of skin disorders, this project aims to empower individuals with valuable insights, enabling them to make informed decisions regarding their healthcare.
 
 ## Repository Contents
-* [Notebook](https://github.com/mirna1983/dermatology-project/blob/main/Notebook.Rmd)
+* [Notebook](https://github.com/mirna1983/dermatology-project/blob/main/Final_Notebook.Rmd)
 * [Data](https://github.com/mirna1983/dermatology-project/blob/main/data/dermatology.data)
 
 ## Project Description
@@ -18,11 +18,13 @@ The objective of the project is to develop a system that utilizies a dataset com
 * Exploratory Data Analysis
 * Predictive Modeling
 ### Models
-* k-nearest neighbors (k-NN)
-* Logistic regression
-* Multivariate adaptive regression splines (MARS)
 * Neural network
-* Support vector machine
+* k-nearest neighbors (k-NN)
+* Support vector machine (Linear and Radial basis function kernel)
+* Linear discriminant analysis
+* Penalized logistic regression
+* Nearest shrunken centroids
+
 ### Technologies
 * RStudio
 
