@@ -106,9 +106,55 @@ hist.data.frame(df)
 ```
 
 ```{r}
+ggplot(df, aes(class, Age)) +
+geom_boxplot(colour = "blue", outlier.colour = "red") + ggtitle("Erythemato-Squamous Disease based on Age") + xlab("Classification of Disease") + ylab("Age of the patient in Years") +
+theme(plot.title = element_text(hjust = 0.5))
+```
+
+```{r}
+ggplot(df, aes(class, fibrosis_of_the_papillary_dermis)) +
+geom_boxplot(colour = "Blue", outlier.colour = "red") +
+ggtitle("Erythemato-Squamous Disease based on Papillary Dermis Fibrosis") + xlab("ESD Classification") +
+ylab("Fibrosis of Papillary Dermis") +
+theme(plot.title = element_text(hjust = 0.5))
+```
+
+```{r}
+ggplot(df, aes(class, thinning_of_the_suprapapillary_epidermis)) +
+geom_boxplot(colour = "Blue", outlier.colour = "red") +
+ggtitle("Erythemato-Squamous Disease based on Suprapapillary Epidermis Thinning") + xlab("ESD Classification") +
+ylab("Thinning of Suprapapillary Epidermis") +
+theme(plot.title = element_text(hjust = 0.5))
+```
+
+```{r}
+ggplot(df, aes(class, perifollicular_parakeratosis)) +
+geom_boxplot(colour = "Blue", outlier.colour = "red") +
+ggtitle("Erythemato-Squamous Disease based on Perifollicular Parakeratosis") + xlab("ESD Classification") +
+ylab("Perifollicular Parakeratosis Level") +
+theme(plot.title = element_text(hjust = 0.5))
+```
+
+```{r}
+ggplot(df, aes(class, clubbing_of_the_rete_ridges)) +
+geom_boxplot(colour = "Blue", outlier.colour = "red") +
+ggtitle("Erythemato-Squamous Disease based on Rete Ridges Clubbing") + xlab("ESD Classification") +
+ylab("Clubbing of Rete Ridges") +
+theme(plot.title = element_text(hjust = 0.5))
+```
+
+```{r}
+ggplot(df, aes(class, itching)) +
+geom_boxplot(colour = "Blue", outlier.colour = "red") +
+ggtitle("Erythemato-Squamous Disease based on Itching") + xlab("ESD Classification") +
+ylab("Itching Severity") +
+theme(plot.title = element_text(hjust = 0.5))
+```
+
+```{r}
 # Plotting the correlation matrix using the corrplot function, only using 
 # complete pairs of observations between variables
-corrplot(cor(df), cl.cex= .5,tl.cex=.4)
+corrplot(cor(df[, -35]), cl.cex= .5,tl.cex=.4)
 ```
 
 ```{r}
@@ -152,7 +198,7 @@ ctrl <- trainControl(method = "cv",
                      savePredictions = TRUE)
 ```
 
-#### Neural network
+#### Neural networks
 ```{r, warning = FALSE}
 nnetGrid <- expand.grid(decay = c(0, 0.01, .1), size = c(3, 7, 11, 13))
 
