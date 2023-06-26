@@ -489,7 +489,7 @@ avg_specificityldaFit <- mean(specificityldaFit)
 
 # Print the results
 cat("Average Sensitivity for Linear Discriminant Analysis:", avg_sensitivityldaFit, "\n")
-cat("Average Specificityfor Linear Discriminant Analysis:", avg_specificityldaFit, "\n")
+cat("Average Specificity for Linear Discriminant Analysis:", avg_specificityldaFit, "\n")
 ```
 
 &nbsp;
