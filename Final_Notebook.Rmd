@@ -15,6 +15,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ***
 
 ## Data Importing and Pre-processing
+
+#### Import Libraries
 ```{r message = FALSE, warning = FALSE, results = 'hide'}
 library(readr)
 library(readxl)
@@ -34,13 +36,17 @@ library(AppliedPredictiveModeling)
 library(glmnet)
 ```
 
-```{r}
+#### Import Data
+```{r, warning = FALSE}
 df <- read.table('https://raw.githubusercontent.com/mirna1983/dermatology-project/main/data/dermatology.data', sep = ",")
 
 head(df, 6)
 ```
 
-```{r}
+&nbsp;
+
+#### Data Dimension
+```{r, warning = FALSE}
 # Dimension of data (rows and columns)
 dim(df)
 ```
@@ -51,7 +57,7 @@ dim(df)
 
 The data frame is missing the column names that correspond to the provided attribute list. Therefore, the column names are appended based on the attribute information list.
 
-```{r, warnings = FALSE}
+```{r, warning = FALSE}
 # Desired column names
 desired_columns <- c("erythema", "scaling", "definite_borders", "itching", "koebner_phenomenon", "polygonal_papules", "follicular_papules", "oral_mucosal_involvement", "knee_and_elbow_involvement", "scalp_involvement", "family_history", "melanin_incontinence", "eosinophils_in_the_infiltrate", "PNL_infiltrate", "fibrosis_of_the_papillary_dermis", "exocytosis", "acanthosis", "hyperkeratosis", "parakeratosis", "clubbing_of_the_rete_ridges", "elongation_of_the_rete_ridges", "thinning_of_the_suprapapillary_epidermis", "spongiform_pustule", "munro_microabcess", "focal_hypergranulosis", "disappearance_of_the_granular_layer", "vacuolisation_and_damage_of_basal_layer", "spongiosis", "saw-tooth_appearance_of_retes", "follicular_horn_plug", "perifollicular_parakeratosis", "inflammatory_monoluclear_inflitrate", "band-like_infiltrate", "Age", "class")
 
@@ -60,30 +66,43 @@ colnames(df) <- desired_columns
 head(df, 3)
 ```
 
-```{r}
+&nbsp;
+
+#### Data Frame Summary
+```{r, warning = FALSE}
 # Summary of the data frame
 summary(df)
 ```
 
-```{r}
+&nbsp;
+
+#### Data Frame Internal Structure
+```{r, warning = FALSE}
 str(df)
 ```
 
-```{r}
+&nbsp;
+
+#### Data Type Conversion
+```{r, warning = FALSE}
 # Change 'Age' into type numeric
 df$Age <- as.numeric(df$Age)
+
 # Change 'Class' into type factor
 df$class <- as.factor(df$class)
 ```
 
-```{r}
+&nbsp;
+
+#### Missing Data
+```{r, warning = FALSE}
 # Check for missing values
 sapply(df, function(x) sum(is.na(x)))
 ```
 
 There are no missing values in this data set other than for the 'Age' predictor which has 8. Due to the small number of instances with missing values, we will delete these rows from the data set.
 
-```{r}
+```{r, warning = FALSE}
 rows_with_NA <- which(is.na(df$Age))
 rows_with_NA
 
@@ -91,13 +110,25 @@ df <- df[-rows_with_NA, ]
 head(df, 6)
 ```
 
-```{r}
+&nbsp;
+
+#### Duplicated Data
+```{r, warning = FALSE}
 # Check for potential duplicate instances
 sum(duplicated(as.matrix(df), fromLast = FALSE))
 ```
 
 There are no duplicate instances to deal with.
 
+&nbsp;
+
+***
+
+&nbsp;
+
+## Exploratory Data Analysis
+
+#### Histogram: All Attributes
 ```{r}
 # Make the graphs smaller by having 3 rows of graphs and 4 columns 
 par(mfrow = c(3,4))
@@ -105,12 +136,18 @@ par(mfrow = c(3,4))
 hist.data.frame(df)
 ```
 
+&nbsp;
+
+#### Box Plot: Erythemato-Squamous Disease and Age
 ```{r}
 ggplot(df, aes(class, Age)) +
 geom_boxplot(colour = "blue", outlier.colour = "red") + ggtitle("Erythemato-Squamous Disease based on Age") + xlab("Classification of Disease") + ylab("Age of the patient in Years") +
 theme(plot.title = element_text(hjust = 0.5))
 ```
 
+&nbsp;
+
+#### Box Plot: Erythemato-Squamous Disease and Papillary Dermis Fibrosis
 ```{r}
 ggplot(df, aes(class, fibrosis_of_the_papillary_dermis)) +
 geom_boxplot(colour = "Blue", outlier.colour = "red") +
@@ -119,6 +156,9 @@ ylab("Fibrosis of Papillary Dermis") +
 theme(plot.title = element_text(hjust = 0.5))
 ```
 
+&nbsp;
+
+#### Box Plot: Erythemato-Squamous Disease and Suprapapillary Epidermis Thinning
 ```{r}
 ggplot(df, aes(class, thinning_of_the_suprapapillary_epidermis)) +
 geom_boxplot(colour = "Blue", outlier.colour = "red") +
@@ -127,6 +167,9 @@ ylab("Thinning of Suprapapillary Epidermis") +
 theme(plot.title = element_text(hjust = 0.5))
 ```
 
+&nbsp;
+
+#### Box Plot: Erythemato-Squamous Disease and Perifollicular Parakeratosis
 ```{r}
 ggplot(df, aes(class, perifollicular_parakeratosis)) +
 geom_boxplot(colour = "Blue", outlier.colour = "red") +
@@ -135,6 +178,9 @@ ylab("Perifollicular Parakeratosis Level") +
 theme(plot.title = element_text(hjust = 0.5))
 ```
 
+&nbsp;
+
+#### Box Plot: Erythemato-Squamous Disease and Rete Ridges Clubbing
 ```{r}
 ggplot(df, aes(class, clubbing_of_the_rete_ridges)) +
 geom_boxplot(colour = "Blue", outlier.colour = "red") +
@@ -143,6 +189,9 @@ ylab("Clubbing of Rete Ridges") +
 theme(plot.title = element_text(hjust = 0.5))
 ```
 
+&nbsp;
+
+#### Box Plot: Erythemato-Squamous Disease and Itching
 ```{r}
 ggplot(df, aes(class, itching)) +
 geom_boxplot(colour = "Blue", outlier.colour = "red") +
@@ -151,14 +200,50 @@ ylab("Itching Severity") +
 theme(plot.title = element_text(hjust = 0.5))
 ```
 
+&nbsp;
+
+#### Correlation Matrix
 ```{r}
 # Plotting the correlation matrix using the corrplot function, only using 
 # complete pairs of observations between variables
-corrplot(cor(df[, -35]), cl.cex= .5,tl.cex=.4)
+corrplot(cor(df[, -35]), cl.cex = .5, tl.cex = .4)
 ```
 
+&nbsp;
+
+#### Bar Plot: All Attributes
 ```{r}
-# plotting boxplots of the 34 predictors and response variable
+# Loop through each column in the dataset
+for (col in names(df)) {
+  # Calculate the frequency of each unique value in the column
+  freq <- table(df[[col]])
+  
+  # Generate a vector of unique colors for each bar
+  bar_colors <- rainbow(length(freq))
+  
+  # Create a bar plot for the column with individual bar colors
+  barplot(freq,
+          main = paste("Bar Plot for", col),
+          xlab = col,
+          ylab = "Frequency",
+          col = bar_colors)
+  
+  # Add the count/amount on top of each bar
+  text(x = 1:length(freq),
+       y = freq,
+       labels = freq,
+       pos = 3)
+  
+  # Pause to display one plot at a time
+  Sys.sleep(2)
+}
+```
+
+&nbsp;
+
+#### Box Plot: Skewness
+```{r}
+# Boxplots of the 34 predictors and response variable
 boxplot(df[1:7])
 boxplot(df[8:14])
 boxplot(df[15:21])
@@ -166,14 +251,25 @@ boxplot(df[22:28])
 boxplot(df[29:35])
 ```
 
+&nbsp;
+
 ```{r}
 # Skewness of numeric predictors
 skewness_values <- apply(df[, 1:34], 2, skewness, na.rm = TRUE)
 skewness_values
 ```
 
-```{r}
-pred <- df[,-35]
+&nbsp;
+
+***
+
+&nbsp;
+
+## Modeling
+
+#### Data Splitting
+```{r, warning = FALSE}
+pred <- df[, -35]
 class <- df$class
 
 levels(class) <- c("A", "B", "C", "D", "E", "F")
@@ -186,7 +282,7 @@ class_train <- class[training]
 pred_test <- pred[-training,]
 class_test <- class[-training]
 
-# pre-process the data
+# Pre-process the data
 preProcValues <- preProcess(pred_train, method = c("center", "scale"))
 
 pred_train_trans <- predict(preProcValues, pred_train)
@@ -196,9 +292,26 @@ ctrl <- trainControl(method = "cv",
                      summaryFunction = multiClassSummary,
                      classProbs = TRUE,
                      savePredictions = TRUE)
+
+# Calculate the number of rows in the training and test sets
+train_set_size <- length(training)
+test_set_size <- length(class) - train_set_size
+
+# Create a bar plot
+barplot(c(train_set_size, test_set_size),
+        names.arg = c("Training Set", "Test Set"),
+        col = c("lightblue", "lightgreen"),
+        main = "Distribution of Data Split",
+        xlab = "Set",
+        ylab = "Number of Records")
+
+text(x = 1:2, y = c(train_set_size, test_set_size),
+     labels = c(train_set_size, test_set_size), pos = 3)
 ```
 
-#### Neural networks
+&nbsp;
+
+#### Neural Networks
 ```{r, warning = FALSE}
 nnetGrid <- expand.grid(decay = c(0, 0.01, .1), size = c(3, 7, 11, 13))
 
@@ -217,8 +330,29 @@ nnet_pred <- predict(nnetTune, pred_test_trans)
 confusionMatrix(nnet_pred, class_test)
 ```
 
+&nbsp;
 
-#### k-nearest neighbors
+```{r, warning = FALSE}
+# Sensitivity values for each class
+sensitivityNnet <- c(1.0000, 0.9167, 1.0000, 0.8889, 1.0000, 1.0000)
+
+# Specificity values for each class
+specificityNnet <- c(1.0000, 0.9828, 1.0000, 0.9836, 1.0000, 1.0000)
+
+# Calculate average sensitivity
+avg_sensitivity <- mean(sensitivityNnet)
+
+# Calculate average specificity
+avg_specificity <- mean(specificityNnet)
+
+# Print the results
+cat("Average Sensitivity for Neural networks:", avg_sensitivity, "\n")
+cat("Average Specificity for Neural networks:", avg_specificity, "\n")
+```
+
+&nbsp;
+
+#### K-Nearest Neighbors
 ```{r, warning = FALSE}
 knnDescr <- pred_train_trans[, -nearZeroVar(pred_train_trans)]
 
@@ -233,8 +367,29 @@ knn_pred <- predict(knnTune, pred_test_trans[, names(knnDescr)])
 confusionMatrix(knn_pred, class_test)
 ```
 
+&nbsp;
 
-#### Support vector machine (Linear)
+```{r, warning = FALSE}
+# Sensitivity values for each class
+sensitivityKnn <- c(0.9091, 0.8333, 1.0000, 1.0000, 1.0000, 0.5000)
+
+# Specificity values for each class
+specificityKnn <- c(1.0000, 0.9828, 1.0000, 0.9344, 1.0000, 0.98485)
+
+# Calculate average sensitivity
+avg_sensitivity_Knn <- mean(sensitivityKnn)
+
+# Calculate average specificity
+avg_specificity_Knn <- mean(specificityKnn)
+
+# Print the results
+cat("Average Sensitivity for k-nearest neighbors:", avg_sensitivity_Knn, "\n")
+cat("Average Specificity for k-nearest neighbors:", avg_specificity_Knn, "\n")
+```
+
+&nbsp;
+
+#### Support Vector Machine (Linear)
 ```{r, warning = FALSE}
 set.seed(123)
 svm_lin <- train(x = pred_train_trans, y = class_train,
@@ -246,8 +401,30 @@ svml_pred <- predict(svm_lin, pred_test_trans)
 confusionMatrix(svml_pred, class_test)
 ```
 
+&nbsp;
 
-#### Support vector machine (RBF)
+```{r, warning = FALSE}
+# Sensitivity values for each class
+sensitivitySvm_lin <- c(1.0000, 1.0000, 1.0000, 0.0000, 0.1111, 0.7500)
+
+# Specificity values for each class
+specificitySvm_lin <- c(0.9583, 0.7241, 1.0000, 1.0000, 1.0000, 1.0000)
+
+# Calculate average sensitivity
+avg_sensitivitySvm_lin <- mean(sensitivitySvm_lin)
+
+# Calculate average specificity
+avg_specificitySvm_lin <- mean(specificitySvm_lin)
+
+# Print the results
+cat("Average Sensitivity for Support vector machine (Linear):", avg_sensitivitySvm_lin, "\n")
+cat("Average Specificity for Support vector machine (Linear):", avg_specificitySvm_lin, "\n")
+
+```
+
+&nbsp;
+
+#### Support Vector Machine (RBF)
 ```{r, warning = FALSE}
 set.seed(123)
 svm_rad <- train(x = pred_train_trans, y = class_train,
@@ -259,9 +436,30 @@ svmr_pred <- predict(svm_rad, pred_test_trans)
 confusionMatrix(svmr_pred, class_test)
 ```
 
+&nbsp;
+
+```{r, warning = FALSE}
+# Sensitivity values for each class
+sensitivitySvm_rad <- c(1.0000, 1.0000, 1.0000, 0.0000, 0.1111, 0.5000)
+
+# Specificity values for each class
+specificitySvm_rad <- c(0.8958, 0.7586, 1.0000, 1.0000, 1.0000, 1.0000)
+
+# Calculate average sensitivity
+avg_sensitivitySvm_rad <- mean(sensitivitySvm_rad)
+
+# Calculate average specificity
+avg_specificitySvm_rad <- mean(specificitySvm_rad)
+
+# Print the results
+cat("Average Sensitivity for Support vector machine (RBF):", avg_sensitivitySvm_rad, "\n")
+cat("Average Specificity for Support vector machine (RBF):", avg_specificitySvm_rad, "\n")
+```
+
+&nbsp;
 
 #### Linear Discriminant Analysis
-```{r}
+```{r, warning = FALSE}
 set.seed(123)
 ldaFit <- train(x = pred_train_trans,
                 y = class_train,
@@ -274,6 +472,27 @@ lda_pred <- predict(ldaFit, pred_test_trans)
 confusionMatrix(lda_pred, class_test)
 ```
 
+&nbsp;
+
+```{r, warning = FALSE}
+# Sensitivity values for each class
+sensitivityldaFit <- c(0.9545, 0.9167, 1.0000, 0.8889, 1.0000, 1.0000)
+
+# Specificity values for each class
+specificityldaFit <- c(1.0000, 0.9655, 1.0000, 0.9836, 1.0000, 1.0000)
+
+# Calculate average sensitivity
+avg_sensitivityldaFit <- mean(sensitivityldaFit)
+
+# Calculate average specificity
+avg_specificityldaFit <- mean(specificityldaFit)
+
+# Print the results
+cat("Average Sensitivity for Linear Discriminant Analysis:", avg_sensitivityldaFit, "\n")
+cat("Average Specificityfor Linear Discriminant Analysis:", avg_specificityldaFit, "\n")
+```
+
+&nbsp;
 
 #### Penalized Logistic Regression
 ```{r, warning = FALSE}
@@ -292,6 +511,27 @@ glm_pred <- predict(glmnFit, pred_test_trans)
 confusionMatrix(glm_pred, class_test)
 ```
 
+&nbsp;
+
+```{r, warning = FALSE}
+# Sensitivity values for each class
+sensitivityPLR <- c(1.0000, 0.9167, 1.0000, 0.8889, 1.0000, 1.0000)
+
+# Specificity values for each class
+specificityPLR <- c(1.0000, 0.9828, 1.0000, 0.9836, 1.0000, 1.0000)
+
+# Calculate average sensitivity
+avg_sensitivityPLR <- mean(sensitivityPLR)
+
+# Calculate average specificity
+avg_specificityPLR <- mean(specificityPLR)
+
+# Print the results
+cat("Average Sensitivity for Penalized Logistic Regression:", avg_sensitivityPLR, "\n")
+cat("Average Specificity for Penalized Logistic Regression:", avg_specificityPLR, "\n")
+```
+
+&nbsp;
 
 #### Nearest Shrunken Centroids
 ```{r, warning = FALSE}
@@ -307,9 +547,30 @@ nsc_pred <- predict(nscFit, pred_test_trans)
 confusionMatrix(nsc_pred, class_test)
 ```
 
+&nbsp;
 
+```{r, warning = FALSE}
+# Sensitivity values for each class
+sensitivitynsc <- c(0.9545, 0.9167, 1.0000, 0.8889, 1.0000, 1.0000)
 
-```{r}
+# Specificity values for each class
+specificitynsc <- c(1.0000, 0.9655, 1.0000, 0.9836, 1.0000, 1.0000)
+
+# Calculate average sensitivity
+avg_sensitivitynsc <- mean(sensitivitynsc)
+
+# Calculate average specificity
+avg_specificitynsc <- mean(specificitynsc)
+
+# Print the results
+cat("Average Sensitivity for Nearest Shrunken Centroids:", avg_sensitivitynsc, "\n")
+cat("Average Specificity for Nearest Shrunken Centroids:", avg_specificitynsc, "\n")
+```
+
+&nbsp;
+
+#### Variable Importance
+```{r, warning = FALSE}
 # Variable importance
 nnetImp <- varImp(nnetTune, scale = FALSE)
 #plot(nnetImp, top = 5)
@@ -327,3 +588,55 @@ nscImp <- varImp(nscFit, scale = FALSE)
 plot(nscImp, top = 5)
 ```
 
+&nbsp;
+
+#### Bar plot: Model Accuracies
+```{r, warning = FALSE}
+# Create a data frame with model names and accuracies
+models <- c("Neural Network", "K-Nearest Neighbors", "SVM (Linear)", "SVM (RBF)", "Linear Discriminant Analysis", "Penalized Logistic Regression", "Nearest Shrunken Centroids")
+
+accuracies <- c(nnetTune$results$Accuracy[1], knnTune$results$Accuracy[1],
+                svm_lin$results$Accuracy[1], svm_rad$results$Accuracy[1],
+                ldaFit$results$Accuracy[1], glmnFit$results$Accuracy[1],
+                nscFit$results$Accuracy[1])
+performance_df <- data.frame(Model = models, Accuracy = accuracies)
+
+# Create the bar plot
+p <- ggplot(performance_df, aes(x = Model, y = Accuracy, fill = Model)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Accuracy of Models",
+       x = "Models", y = "Accuracy") +
+  scale_fill_manual(values = rainbow(nrow(performance_df))) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Add the values on top of each bar
+p + geom_text(aes(label = round(Accuracy, 2)), vjust = -0.5)
+```
+
+&nbsp;
+
+#### Bar plot: Model Kappas
+```{r, warning = FALSE}
+# Create a data frame with model names and kappas
+kappas <- c(confusionMatrix(nnet_pred, class_test)$overall["Kappa"],
+            confusionMatrix(knn_pred, class_test)$overall["Kappa"],
+            confusionMatrix(svml_pred, class_test)$overall["Kappa"],
+            confusionMatrix(svmr_pred, class_test)$overall["Kappa"],
+            confusionMatrix(lda_pred, class_test)$overall["Kappa"],
+            confusionMatrix(glm_pred, class_test)$overall["Kappa"],
+            confusionMatrix(nsc_pred, class_test)$overall["Kappa"])
+performance_df <- data.frame(Model = models, Kappa = kappas)
+
+# Create the bar plot
+p <- ggplot(performance_df, aes(x = Model, y = Kappa, fill = Model)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Kappa of Models",
+       x = "Models", y = "Kappa") +
+  scale_fill_manual(values = rainbow(nrow(performance_df))) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Add the values on top of each bar
+p + geom_text(aes(label = round(Kappa, 2)), vjust = -0.5)
+```
