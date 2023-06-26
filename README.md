@@ -1,7 +1,7 @@
 # Predictive Modeling of Dermatological Conditions
 This is the final project for the University of San Diego’s ADS 503 Applied Predictive Modeling course.
 
-#### -- Project Status: [In Progress]
+#### -- Project Status: [Completed]
 
 ## Project Introduction and Objective
 The objective of the project is to develop a system that utilizes a dataset comprising age, skin features, and the type of dermatological condition to predict various diseases within a specific group, namely psoriasis, seborrheic dermatitis, lichen planus, pityriasis rosea, chronic dermatitis, and pityriasis rubra pilaris. By using advanced techniques, predictive models will be developed to identify these conditions based on the provided information. The project involves multiple stages, including data preparation, feature analysis, training, fine-tuning, and evaluation of performance. By advancing the understanding and prediction capabilities of skin disorders, this project aims to empower individuals with valuable insights, enabling them to make informed decisions regarding their healthcare.
